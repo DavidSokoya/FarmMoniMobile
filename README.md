@@ -37,19 +37,23 @@ Handling **Native vs Custom Splash Screens** was a key challenge. I learned how 
 ---
 
 ## Installation
+
 ```bash
 git clone <repo-url>
 npm install
-
+```
 
 ### Environment Setup
 Create a `.env` file and add your `EXPO_PUBLIC_FIREBASE_` keys.
 
 ```bash
 npx expo prebuild
+```
 
+### Run the Application
 ```bash
 npx expo start -c
-Scan the QR code with Expo Go (iOS)
+```
 
-Or install the APK (Android)
+- Scan the QR code with **Expo Go** (iOS)  
+- Or install the **APK** (Android)
