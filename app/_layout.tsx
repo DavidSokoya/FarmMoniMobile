@@ -11,7 +11,9 @@ export default function RootLayout() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const segments = useSegments();
+  
+  // FIX: Cast this to string[] to stop TypeScript from complaining about length 0
+  const segments = useSegments() as string[];
 
   useEffect(() => {
     const subscriber = onAuthStateChanged(auth, (user) => {
@@ -24,32 +26,34 @@ export default function RootLayout() {
   useEffect(() => {
     if (initializing) return;
 
+    // Now this check works without error
     const inAuthGroup = segments[0] === '(auth)';
+    const isSplashScreen = segments.length === 0; 
+    const isPublic = inAuthGroup || isSplashScreen;
 
     const checkRoleAndRedirect = async () => {
-      if (user && inAuthGroup) {
-        // --- FIX 1: USER IS LOGGED IN, BUT ON LOGIN PAGE ---
-        try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            
-            // --- FIX 2: CORRECT ROUTE PATHS ---
-            // Use '/' instead of '/dashboard' or '/home'
-            if (userData.role === 'admin') {
-              router.replace('/(admin)/' as any); 
-            } else {
-              router.replace('/(user)/' as any);
+      if (user) {
+        // If logged in but in a public area (Splash/Login), send to Dashboard
+        if (isPublic) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    if (userData.role === 'admin') {
+                        router.replace('/(admin)/dashboard' as any); 
+                    } else {
+                        router.replace('/(user)/' as any);
+                    }
+                }
+            } catch (error) {
+                console.error("Role check failed", error);
             }
-          }
-        } catch (error) {
-          console.error("Role check failed", error);
         }
-
-      } else if (!user && !inAuthGroup) {
-        // --- FIX 3: USER NOT LOGGED IN, TRYING TO ACCESS APP ---
-        router.replace('/(auth)/login' as any);
+      } 
+      // If NOT logged in, and NOT in a public area, send to Login
+      else if (!user && !isPublic) {
+         router.replace('/(auth)/login' as any);
       }
     };
 

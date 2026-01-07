@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+## FarmMoni  
+[View Project](#)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+[![FarmMoni App](https://via.placeholder.com/800x400.png?text=FarmMoni+App+Demo+GIF)](#)
 
-## Get started
+A digital agriculture platform that allows users to securely invest in verified farm cycles and track their returns. **FarmMoni** bridges the gap between everyday investors and high-yield agricultural opportunities in Nigeria.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Technologies Used
+- **React Native**
+- **JavaScript**
+- **Firebase** (Authentication, Firestore, Role Management)
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Access Control (User & Admin)
+The application supports both **User** and **Admin** interfaces.
 
-In the output, you'll find options to open the app in a
+- By default, users can access the **User interface** after authentication.
+- To access the **Admin interface**, the user role must be updated to `admin` directly in **Firebase**.
+- Once the role is changed, the application automatically grants access to admin-specific features on the next login or app refresh.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Optimizations
+One major area for optimization was the application binary size. I implemented an **Android App Bundle (AAB)** workflow for production to reduce user download size from ~80MB to ~25MB. I also optimized the asset loading strategy by compressing splash imagery and using **Hermes** as the JavaScript engine to improve startup time on lower-end Android devices.
 
-## Get a fresh project
+### Future Optimization
+One key optimization planned for the future is to **refactor the codebase** to improve maintainability, scalability, and readability. This refactoring would include better component abstraction, cleaner state management, and improved separation of concerns across the application.
 
-When you're ready, run:
+---
+
+## Lessons Learned
+Handling **Native vs Custom Splash Screens** was a key challenge. I learned how to synchronize the native `app.json` background color with the React Native animation layer to prevent the *“white flash”* glitch. Additionally, I moved from standard `.env` files to `EXPO_PUBLIC_` variables to ensure secure injection of API keys into the native build process during **EAS builds**.
+
+---
+
+## Installation
+```bash
+git clone <repo-url>
+npm install
+
+
+### Environment Setup
+Create a `.env` file and add your `EXPO_PUBLIC_FIREBASE_` keys.
 
 ```bash
-npm run reset-project
-```
+npx expo prebuild
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+```bash
+npx expo start -c
+Scan the QR code with Expo Go (iOS)
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Or install the APK (Android)

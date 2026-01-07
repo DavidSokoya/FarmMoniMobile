@@ -66,7 +66,7 @@ export default function RegisterScreen() {
       Alert.alert("Success", "Account created successfully!");
       
       // 6. Navigate to User Home
-      router.replace('/(user)/index' as any);
+      router.replace('/(user)/' as any);
 
     } catch (err: any) {
       console.error(err);

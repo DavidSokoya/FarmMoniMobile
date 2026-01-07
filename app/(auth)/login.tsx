@@ -5,12 +5,11 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
 
-// 1. Firebase Imports
+// Firebase
 import { signInWithEmailAndPassword } from 'firebase/auth';
 // @ts-ignore
 import { auth } from '../../services/firebaseConfig';
 
-// 2. Local Asset
 const logo = require('../../assets/farmmoni-logo.png');
 
 export default function LoginScreen() {
@@ -21,7 +20,6 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    // Basic Validation
     if (!email || !password) {
       Alert.alert("Missing Fields", "Please enter both email and password.");
       return;
@@ -30,34 +28,21 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      // 3. Authenticate with Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      // JUST SIGN IN. Do not route here. The _layout.tsx will see the user change and route automatically.
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login Success");
       
-      console.log("Login Success:", user.email);    
-      // Fix 2: Small delay to let Auth settle (Fixes Permission Error)
-      setTimeout(() => {
-          if (email.toLowerCase().includes('admin')) {
-            router.replace('/(admin)/dashboard' as any);
-          } else {
-            // OPTION A: Point to the group folder (Standard)
-            router.replace('/(user)/index' as any); 
-          }
-      }, 500);
     } catch (err: any) {
       const error = err;
       console.error("Login Error:", error);
       
-      // Friendly Error Messages
       let message = "Something went wrong.";
       if (error.code === 'auth/invalid-credential') message = "Invalid email or password.";
       if (error.code === 'auth/user-not-found') message = "User not found.";
       if (error.code === 'auth/too-many-requests') message = "Too many failed attempts. Try again later.";
-      if (error.code === 'auth/invalid-api-key') message = "Configuration Error: Invalid API Key.";
       
       Alert.alert("Login Failed", message);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Only stop loading on error. On success, keep loading until the layout redirects.
     }
   };
 
@@ -71,11 +56,7 @@ export default function LoginScreen() {
       {/* --- HEADER --- */}
       <View style={tw`items-center mb-10`}>
         <View style={tw`bg-white p-4 rounded-3xl mb-4 shadow-lg shadow-green-500/20`}>
-          <Image 
-            source={logo} 
-            style={tw`w-20 h-20`} 
-            resizeMode="contain" 
-          />
+          <Image source={logo} style={tw`w-20 h-20`} resizeMode="contain" />
         </View>
         <Text style={tw`text-white text-3xl font-bold tracking-tight`}>Welcome Back</Text>
         <Text style={tw`text-gray-400 text-sm mt-1`}>Sign in to continue</Text>
@@ -83,8 +64,6 @@ export default function LoginScreen() {
 
       {/* --- FORM --- */}
       <View style={tw`w-full max-w-sm gap-4`}>
-        
-        {/* Email Field */}
         <View style={tw`bg-gray-800 rounded-xl border border-gray-700 flex-row items-center px-4 py-3`}>
           <Ionicons name="mail-outline" size={20} color="#9CA3AF" />
           <TextInput 
@@ -98,7 +77,6 @@ export default function LoginScreen() {
           />
         </View>
 
-        {/* Password Field */}
         <View style={tw`bg-gray-800 rounded-xl border border-gray-700 flex-row items-center px-4 py-3`}>
           <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />
           <TextInput 
@@ -114,12 +92,10 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Forgot Password */}
         <TouchableOpacity style={tw`items-end`}>
           <Text style={tw`text-green-500 font-medium text-sm`}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        {/* Sign In Button */}
         <TouchableOpacity 
           onPress={handleLogin}
           disabled={loading}
@@ -132,23 +108,13 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
 
-        {/* --- SIGN UP LINK --- */}
-        <TouchableOpacity 
-          onPress={() => router.push('/(auth)/register' as any)} 
-          style={tw`items-center mt-6`}
-        >
+        <TouchableOpacity onPress={() => router.push('/(auth)/register' as any)} style={tw`items-center mt-6`}>
           <Text style={tw`text-gray-400`}>
             Don't have an account? <Text style={tw`text-green-400 font-bold`}>Sign Up</Text>
           </Text>
         </TouchableOpacity>
 
       </View>
-      
-      {/* Footer */}
-      <View style={tw`absolute bottom-10`}>
-        <Text style={tw`text-gray-600 text-xs`}>FarmMoni</Text>
-      </View>
-
     </KeyboardAvoidingView>
   );
 }
